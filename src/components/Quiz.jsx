@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProgressBar from "./ProgressBar";
+import { ArrowRight, Check } from "lucide-react";
 
 const Quiz = () => {
   const [questions, setQuestions] = useState([]);
@@ -42,8 +43,19 @@ const Quiz = () => {
         "https://jsonplaceholder.typicode.com/posts"
       );
       const data = await response.json();
-      console.log(data.slice(0, 10));
-      setQuestions(data.slice(0, 10));
+      const questions = data.slice(0, 10).map((item) => {
+        return {
+          question: item.body,
+          options: {
+            A: item.title,
+            B: item.title,
+            C: item.title,
+            D: item.title,
+          },
+        };
+      });
+
+      setQuestions(questions);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
@@ -63,6 +75,21 @@ const Quiz = () => {
     setUserAnswers([
       ...userAnswers,
       { question: currentQuestionIndex + 1, answer },
+    ]);
+    moveToNextQuestion();
+  };
+
+  const handleRestartQuiz = () => {
+    setUserAnswers([]);
+    setCurrentQuestionIndex(0);
+    setQuizEnded(false);
+    setIsOptionDisabled(true);
+  };
+
+  const handleNext = () => {
+    setUserAnswers([
+      ...userAnswers,
+      { question: currentQuestionIndex + 1, answer: "-" },
     ]);
     moveToNextQuestion();
   };
@@ -89,6 +116,8 @@ const Quiz = () => {
             </tr>
           ))}
         </tbody>
+
+        <button onClick={handleRestartQuiz}>Restart Quiz</button>
       </div>
     );
   }
@@ -101,6 +130,7 @@ const Quiz = () => {
       <div className="flex gap-3 justify-center">
         {questions.map((question, index) => (
           <button
+            key={index}
             className={`${
               index === currentQuestionIndex
                 ? "border border-[#646cff]"
@@ -108,7 +138,13 @@ const Quiz = () => {
             }`}
             disabled={index !== currentQuestionIndex}
           >
-            {index + 1}
+            {index < currentQuestionIndex ? (
+              <span>
+                <Check />
+              </span>
+            ) : (
+              index + 1
+            )}
           </button>
         ))}
       </div>
@@ -120,7 +156,7 @@ const Quiz = () => {
           color={"#646cff"}
         />
       </div>
-      <p>{currentQuestion.body}</p>
+      <p className="max-w-3xl text-lg">{currentQuestion.question}</p>
       <div className="grid grid-cols-2 grid-rows-2 gap-3 max-w-2xl">
         {["A", "B", "C", "D"].map((option) => (
           <button
@@ -131,10 +167,18 @@ const Quiz = () => {
             onClick={() => handleAnswerClick(option)}
             disabled={isOptionDisabled}
           >
-            <span className="font-bold">{option}:</span> {currentQuestion.title}
+            <span className="font-bold">{option}:</span>{" "}
+            {currentQuestion.options[option]}
           </button>
         ))}
       </div>
+
+      <button onClick={handleNext}>
+        <span className="flex gap-3">
+          Next
+          <ArrowRight />
+        </span>
+      </button>
     </div>
   );
 };
