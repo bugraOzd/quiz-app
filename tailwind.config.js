@@ -32,42 +32,6 @@ export default {
           light: "#213547",
         },
       },
-      fontSize: {
-        heading: "3.2em",
-        body: "1em",
-      },
-      lineHeight: {
-        heading: "1.1",
-        body: "1.5",
-      },
-      fontWeight: {
-        normal: "400",
-        medium: "500",
-      },
-      minWidth: {
-        body: "320px",
-      },
-      minHeight: {
-        body: "100vh",
-      },
-      borderRadius: {
-        button: "8px",
-      },
-      borderWidth: {
-        button: "1px",
-      },
-      padding: {
-        button: "0.6em 1.2em",
-      },
-      transitionProperty: {
-        "border-color": "border-color",
-      },
-      transitionDuration: {
-        default: "250ms",
-      },
-      outline: {
-        focus: "4px auto -webkit-focus-ring-color",
-      },
     },
   },
   plugins: [],
