@@ -10,16 +10,21 @@ const Quiz = () => {
   const [isOptionDisabled, setIsOptionDisabled] = useState(true);
   const [userAnswers, setUserAnswers] = useState([]);
   const [quizEnded, setQuizEnded] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(false);
 
   useEffect(() => {
     fetchQuestions();
   }, []);
 
   useEffect(() => {
-    if (currentQuestionIndex < questions.length && !quizEnded) {
+    if (currentQuestionIndex < questions.length && !quizEnded && quizStarted) {
       const timer = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime === 1) {
+            setUserAnswers([
+              ...userAnswers,
+              { question: currentQuestionIndex + 1, answer: "-" },
+            ]);
             clearInterval(timer);
             moveToNextQuestion();
             return 30;
@@ -30,7 +35,7 @@ const Quiz = () => {
 
       return () => clearInterval(timer);
     }
-  }, [currentQuestionIndex, questions, quizEnded]);
+  }, [currentQuestionIndex, questions, quizEnded, quizStarted]);
 
   useEffect(() => {
     if (timeLeft === 20) {
@@ -44,22 +49,26 @@ const Quiz = () => {
         "https://jsonplaceholder.typicode.com/posts"
       );
       const data = await response.json();
-      const questions = data.slice(0, 10).map((item) => {
-        return {
-          question: item.body,
-          options: {
-            A: item.title.slice(0, Math.random() * item.title.length + 1),
-            B: item.title.slice(0, Math.random() * item.title.length + 1),
-            C: item.title.slice(0, Math.random() * item.title.length + 1),
-            D: item.title.slice(0, Math.random() * item.title.length + 1),
-          },
-        };
-      });
+      const questions = mapQuestionData(data);
 
       setQuestions(questions);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
+  };
+
+  const mapQuestionData = (data) => {
+    return data.slice(0, 10).map((item) => {
+      return {
+        question: item.body,
+        options: {
+          A: item.title.slice(0, Math.random() * item.title.length + 1),
+          B: item.title.slice(0, Math.random() * item.title.length + 1),
+          C: item.title.slice(0, Math.random() * item.title.length + 1),
+          D: item.title.slice(0, Math.random() * item.title.length + 1),
+        },
+      };
+    });
   };
 
   const moveToNextQuestion = () => {
@@ -78,6 +87,10 @@ const Quiz = () => {
       { question: currentQuestionIndex + 1, answer },
     ]);
     moveToNextQuestion();
+  };
+
+  const handleStartQuiz = () => {
+    setQuizStarted(true);
   };
 
   const handleRestartQuiz = () => {
@@ -137,24 +150,35 @@ const Quiz = () => {
         />
       </div>
 
-      <section className="py-10 px-16 flex flex-col justify-center items-center gap-5 border border-secondary rounded-lg shadow-2xl">
-        <p className="max-w-3xl text-lg">{currentQuestion.question}</p>
-        <div className="grid grid-cols-2 grid-rows-2 gap-3 max-w-2xl">
-          {["A", "B", "C", "D"].map((option) => (
-            <button
-              className={`${
-                isOptionDisabled ? "cursor-not-allowed" : "cursor-pointer"
-              }`}
-              key={option}
-              onClick={() => handleAnswerClick(option)}
-              disabled={isOptionDisabled}
-            >
-              <span className="font-bold">{option}:</span>{" "}
-              {currentQuestion.options[option]}
-            </button>
-          ))}
-        </div>
-      </section>
+      {!quizStarted && (
+        <button
+          className="bg-primary hover:bg-primary-hover hover:border-primary-light"
+          onClick={handleStartQuiz}
+        >
+          Start
+        </button>
+      )}
+
+      <div className={`${!quizStarted ? "blur-md" : ""}`}>
+        <section className="py-10 px-16 flex flex-col justify-center items-center gap-5 border border-secondary rounded-lg shadow-2xl">
+          <p className="max-w-3xl text-lg">{currentQuestion.question}</p>
+          <div className="grid grid-cols-2 grid-rows-2 gap-3 max-w-2xl">
+            {["A", "B", "C", "D"].map((option) => (
+              <button
+                className={`${
+                  isOptionDisabled ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+                key={option}
+                onClick={() => handleAnswerClick(option)}
+                disabled={isOptionDisabled}
+              >
+                <span className="font-bold">{option}:</span>{" "}
+                {currentQuestion.options[option]}
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
