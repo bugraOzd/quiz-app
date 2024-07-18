@@ -118,16 +118,17 @@ const Quiz = () => {
   const timePercentage = (timeLeft / 30) * 100;
 
   return (
-    <div className="flex flex-col justify-center items-center gap-6">
-      <div className="flex gap-3 justify-center">
+    <div className="flex flex-col justify-center items-center gap-4 sm:gap-6 p-4 sm:p-6">
+      <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
         {questions.map((question, index) => (
           <button
             key={index}
-            className={`${
-              index === currentQuestionIndex
-                ? "border border-[#646cff]"
-                : "cursor-not-allowed"
-            }`}
+            className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-sm sm:text-base
+              ${
+                index === currentQuestionIndex
+                  ? "border-2 border-[#646cff]"
+                  : "cursor-not-allowed"
+              }`}
             disabled={index !== currentQuestionIndex}
           >
             {index < currentQuestionIndex ? (
@@ -141,7 +142,7 @@ const Quiz = () => {
         ))}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div>
         <ProgressBar
           size={90}
           text={timeLeft}
@@ -152,28 +153,33 @@ const Quiz = () => {
 
       {!quizStarted && (
         <button
-          className="bg-primary hover:bg-primary-hover hover:border-primary-light"
+          className="bg-primary hover:bg-primary-hover hover:border-primary-light px-4 py-2 rounded-md"
           onClick={handleStartQuiz}
         >
           Start
         </button>
       )}
 
-      <div className={`${!quizStarted ? "blur-md" : ""}`}>
-        <section className="py-10 px-16 flex flex-col justify-center items-center gap-5 border border-secondary rounded-lg shadow-2xl">
-          <p className="max-w-3xl text-lg">{currentQuestion.question}</p>
-          <div className="grid grid-cols-2 grid-rows-2 gap-3 max-w-2xl">
+      <div className={`w-full max-w-4xl ${!quizStarted ? "blur-md" : ""}`}>
+        <section className="py-6 sm:py-10 px-4 sm:px-8 md:px-16 flex flex-col justify-center items-center gap-4 sm:gap-5 border border-secondary rounded-lg shadow-2xl">
+          <p className="text-base sm:text-lg md:text-xl text-center">
+            {currentQuestion.question}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
             {["A", "B", "C", "D"].map((option) => (
               <button
-                className={`${
-                  isOptionDisabled ? "cursor-not-allowed" : "cursor-pointer"
-                }`}
+                className={`p-3 border rounded-md text-left transition-colors
+                  ${
+                    isOptionDisabled ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
                 key={option}
                 onClick={() => handleAnswerClick(option)}
                 disabled={isOptionDisabled}
               >
                 <span className="font-bold">{option}:</span>{" "}
-                {currentQuestion.options[option]}
+                <span className="text-sm sm:text-base">
+                  {currentQuestion.options[option]}
+                </span>
               </button>
             ))}
           </div>
