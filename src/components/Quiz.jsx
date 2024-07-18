@@ -11,6 +11,8 @@ const Quiz = () => {
   const [userAnswers, setUserAnswers] = useState([]);
   const [quizEnded, setQuizEnded] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("Your name");
 
   useEffect(() => {
     fetchQuestions();
@@ -108,14 +110,42 @@ const Quiz = () => {
   if (quizEnded) {
     return (
       <>
-        <Table answers={userAnswers} />
-        <button onClick={handleRestartQuiz}>Restart Quiz</button>
+        <div>
+          <Table answers={userAnswers} playerName={name} />
+          <button onClick={handleRestartQuiz}>Restart Quiz</button>
+        </div>
       </>
     );
   }
 
   const currentQuestion = questions[currentQuestionIndex];
   const timePercentage = (timeLeft / 30) * 100;
+
+  function handleEditMode() {
+    setIsEditing((editing) => !editing);
+  }
+
+  function handleChange(event) {
+    setName(event.target.value);
+  }
+
+  let playerName = (
+    <span className="border border-primary hover:border-primary-hover rounded-lg w-[12rem] px-[1.2em] py-[0.6em]">
+      {name}
+    </span>
+  );
+
+  if (isEditing) {
+    playerName = (
+      <input
+        className="text-center animate-pulse  w-[12rem] px-[1.2em] py-[0.6em] rounded-lg"
+        type="text"
+        required
+        value={name}
+        onChange={handleChange}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col justify-center items-center gap-4 sm:gap-6 p-4 sm:p-6">
@@ -151,18 +181,27 @@ const Quiz = () => {
         />
       </div>
 
+      <div className="flex gap-3 items-center">
+        <span className="">{playerName}</span>
+        {!quizStarted && (
+          <button onClick={handleEditMode}>
+            {!isEditing ? "Edit" : "Save"}
+          </button>
+        )}
+      </div>
+
       {!quizStarted && (
         <button
           className="bg-primary hover:bg-primary-hover hover:border-primary-light px-4 py-2 rounded-md"
           onClick={handleStartQuiz}
         >
-          Start
+          Start Quiz
         </button>
       )}
 
       <div className={`w-full max-w-4xl ${!quizStarted ? "blur-md" : ""}`}>
         <section className="py-6 sm:py-10 px-4 sm:px-8 md:px-16 flex flex-col justify-center items-center gap-4 sm:gap-5 border border-secondary rounded-lg shadow-2xl">
-          <p className="text-base sm:text-lg md:text-xl text-center">
+          <p className="text-base sm:text-lg md:text-xl ">
             {currentQuestion.question}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
