@@ -15,7 +15,7 @@ const ProgressBar = ({
     <div className="relative" style={{ width: size, height: size }}>
       <svg className="rotate-[-90deg]" width={size} height={size}>
         <circle
-          className="text-gray-200"
+          className="text-secondary"
           strokeWidth={strokeWidth}
           stroke="currentColor"
           fill="transparent"
